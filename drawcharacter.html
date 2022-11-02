@@ -1,0 +1,167 @@
+<html>
+	<head>
+		<title>character paint</title>
+		<style type="text/css">
+			input{
+				z-index:1;
+				position:fixed;
+			}
+			#input1{
+				position:fixed;
+				top:0;
+				left:90%;
+			}
+			#input2{
+				position:fixed;
+				top:100;
+				left:90%;
+			}
+			#input3{
+				position:fixed;
+				top:50;
+				left:80%;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<input type="text">
+		<input type="button" onclick="piColor()" value="pic color:" id="input3">
+		<input type="button" onclick="show()" value="show" id="input1">
+		<input type="button" onclick="erase()" value="erase" id="input2">
+		<script>
+			var name=prompt("enter name of the object")
+			var template=[]
+			var k=0
+			var bcolor="black"
+			function interger(x){
+				let n=x
+				for(let i=0;i<=n;i++){
+					if(i+1>n){
+						return(i)	
+					}
+				}
+			}
+			window.onclick=function(){
+				function drawpad(){
+					let div=[document.createElement("div")]
+					let btn=document.createElement("input")
+					let avw=25
+					let avh=25
+					let cx=0
+					let cy=0
+					let i=0
+					for(let j=1;j<=interger(window.innerHeight/avh)+1;j++){
+						for(let l=0 ;l<interger(window.innerWidth/avw)+1;l++){
+							if(l<interger(window.innerWidth/avw)){
+								div.push(document.createElement("div"))
+								div[i].style.height=avh-1+"px"
+								div[i].style.width=avw-1+"px"
+								div[i].style.position="absolute"
+								div[i].style.left=cx+"px"
+								div[i].y=cy
+								div[i].style.top=cy+"px"
+								cx+=avw
+								div[i].x=cx
+								div[i].style.backgroundColor="grey"
+								div[i].id=i
+								div[i].o=0
+								document.body.appendChild(div[i])
+								i++
+							}
+						}
+						cx=0
+						cy+=avh
+		   	 		}
+		    	}
+		    	drawpad()
+		    	clickable()
+		    	//template=clickable()
+		    	//window.onresize=show(template)
+		    	window.onclick=""
+			}
+			var clickable=function(){
+				let div=document.getElementsByTagName("div")
+				let te=[]
+				for(let i=0;i<div.length;i++){
+					div[i].onclick=function(){
+						let pbcolor=bcolor
+						if(div[i].style.backgroundColor==bcolor && div[i].o==1){
+							//alert(div[i].style.backgroundColor+" "+bcolor+" "+div[i].o)
+							bcolor="grey"
+							div[i].style.backgroundColor=bcolor
+							template.pop()
+							div[i].o=0
+						}
+						else if(div[i].o<1){
+							template.push({
+								x:div[i].x,
+								y:div[i].y,
+								w:2,
+								h:2,
+								color:bcolor
+							})
+							div[i].o+=1
+						}
+						div[i].style.backgroundColor=bcolor
+						bcolor=pbcolor
+						
+							//show()
+					}
+				
+				}
+			}
+			var show=function(){
+				let inp=document.getElementsByTagName("input")
+				let te=""
+				let sx=0
+				let sy=0
+				let w=prompt("enter width")
+				let h=prompt("enter height")
+				for(let i=0;i<template.length;i++){
+					if(i<1){
+						te+="var "+name+"=[{\nx:"+template[i].x+",\n"+"y:"+ template[i].y+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\n"+"c:'"+template[i].color+"'}];\n"
+						te+="\n"+name+".push("
+					}
+					else{
+						//te+=name+"[i]{\nx:"+name+"[i].x+"+ (template[i].x-template[i-1].x) +",\n"+"y:" +name+"[i-1].y"+(template[i].y-template[i-1].y)+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\ncolor:'"+template[i].color+"'\n"
+						sx+=((template[i].x-template[i-1].x)/25)*w
+						sy+=((template[i].y-template[i-1].y)/25)*w
+						te+="{x:"+name+"[0].x+"+ sx +",\n"+"y:"+name+"[0].y+"+ sy +",\n"+"w:"+w+",\n"+"h:"+h+",\nc:'"+template[i].color+"'\n"
+					}
+					if(i<template.length-1){
+						if(i>0){
+							te=te+"},\n"
+						}
+					}
+					else{
+						te=te+"})\n"
+					}
+				}
+				inp[0].value=te
+				//inp.type="text"
+				//document.body.appendChild(inp)
+				//console.log(te)
+			}
+			var erase=function(){
+				let inp=document.getElementsByTagName("input")
+				let div=document.getElementsByTagName("div")
+				template=[]
+				for(let i=0;i<div.length;i++){
+					div[i].style.backgroundColor="grey"
+					div[i].o=0
+					//alert()
+				}
+				//inp[0].value=""
+				//inp[2].style.top=-100+"%"
+				console.clear()
+			}
+			var piColor=function(){
+				let inp=document.getElementsByTagName("input")
+				bcolor=inp[0].value
+				inp[1].value="pic color:"+bcolor
+				clickable()
+			}
+		</script>
+	</body>
+</html>
