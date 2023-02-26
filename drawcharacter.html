@@ -1,0 +1,457 @@
+<html>
+	<head>
+		<title>character paint</title>
+		<style type="text/css">
+			input{
+				z-index:1;
+				position:fixed;
+			}
+			#input1{
+				position:fixed;
+				top:0;
+				left:87%;
+			}
+			#input2{
+				position:fixed;
+				top:100;
+				left:87%;
+			}
+			#input3{
+				position:fixed;
+				top:50;
+				left:76%;
+			}
+			#input4{
+			    position:fixed;
+			    top:150;
+			    left:77%;
+			}
+			#input5{
+			    position:fixed;
+			    top:175;
+			    left:77%;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<input type="text">
+		<input type="button" onclick="piColor()" value="pic color:" id="input3">
+		<input type="button" onclick="show()" value="show" id="input1">
+		<input type="button" onclick="erase()" value="erase" id="input2">
+		<input type="button" value="enter a label" id="input4">
+		<input type="button" onclick="locate()"value="enter drawing" id="input5">
+		<script>
+		    var btns=document.getElementsByTagName("input")
+			var name=prompt("enter name of the object")
+			var template=[]
+			var gp=false
+			var sp=[]
+			var k=0
+			var label=" "
+			var bcolor="black"
+			var width=prompt("enter width")
+			var height=prompt("enter height")
+			function interger(x){
+				let n=x
+				for(let i=0;i<=n;i++){
+					if(i+1>n){
+						return(i)	
+					}
+				}
+			}
+			window.onclick=function(){
+				function drawpad(){
+					let div=[document.createElement("div")]
+					let btn=document.createElement("input")
+					let avw=25
+					let avh=25
+					let cx=0
+					let cy=0
+					let i=0
+					let wiH=window.innerHeight*2
+					let wiW=window.innerWidth
+					if(wiH>1000){
+					    wiH=1000
+					}
+					if(wiW>1000){
+					    wiW=1000
+					}
+					for(let j=1;j<=(interger(wiH/avh)+1)*2;j++){
+						for(let l=0 ;l<(interger(wiW/avw)+1);l++){
+							if(l<interger(wiW/avw)){
+								div.push(document.createElement("div"))
+								div[i].style.height=avh-1+"px"
+								div[i].style.width=avw-1+"px"
+								div[i].style.position="absolute"
+								div[i].style.left=cx+"px"
+								div[i].y=cy
+								div[i].style.top=cy+"px"
+								cx+=avw
+								div[i].x=cx
+								div[i].style.backgroundColor="grey"
+								div[i].id=i
+								div[i].o=0
+								document.body.appendChild(div[i])
+								i++
+							}
+						}
+						cx=0
+						cy+=avh
+		   	 		}
+		    	}
+		    	drawpad()
+		    	clickable()
+		    	//template=clickable()
+		    	//window.onresize=show(template)
+		    	window.onclick=""
+			}
+			var enter_label=function(){
+			    let l=prompt("enter a label")
+			    return(l)
+			}
+			btns[4].onclick=function(){
+			    label=enter_label()
+			}
+			var removepixel=function(obj,arr){
+			    let arr2=[]
+			    let obj2;
+			    for(let i=0;i<=arr.length-1;i++){
+			        obj2=arr[i]
+			        if(!(obj2.x ==obj.x && obj2.y==obj.y)){
+			            arr2.push(obj2)
+			        }
+			    }
+			    return(arr2)
+			}
+			var clickable=function(){
+				let div=document.getElementsByTagName("div")
+				let te=[]
+				for(let i=0;i<div.length;i++){
+					div[i].onclick=function(){
+						let pbcolor=bcolor
+						if(/*div[i].style.backgroundColor==bcolor && */div[i].o==1){
+							//alert(div[i].style.backgroundColor+" "+bcolor+" "+div[i].o)
+							bcolor="grey"
+							div[i].style.backgroundColor=bcolor
+							dpixel={
+							    x:div[i].x,
+							    y:div[i].y,
+							    w:width,
+							    h:height,
+							    color:bcolor
+							}
+							template=removepixel(dpixel,template)
+							//template.pop()
+							div[i].o=0
+						}
+						else if(div[i].o<1){
+							template.push({
+								x:div[i].x,
+								y:div[i].y,
+								w:width,
+								h:height,
+								color:bcolor,
+								label:label
+							})
+							div[i].o+=1
+						}
+						//alert(template)
+						div[i].style.backgroundColor=bcolor
+						bcolor=pbcolor
+						
+							//show()
+					}
+				
+				}
+			}
+			var show=function(){
+				let inp=document.getElementsByTagName("input")
+				let te=""
+				let sx=0
+				let sy=0
+				for(let i=0;i<template.length;i++){
+					if(i<1){
+						te+="var "+name+"=[{\nx:"+template[i].x+",\n"+"y:"+ template[i].y+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\n"+"c:'"+template[i].color+"',\n label:'"+template[i].label+"'}];\n"
+						te+="\n"+name+".push("
+					}
+					else{
+						//te+=name+"[i]{\nx:"+name+"[i].x+"+ (template[i].x-template[i-1].x) +",\n"+"y:" +name+"[i-1].y"+(template[i].y-template[i-1].y)+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\ncolor:'"+template[i].color+"'\n"
+						sx+=((template[i].x-template[i-1].x)/25)*width
+						sy+=((template[i].y-template[i-1].y)/25)*height
+						te+="{x:"+name+"[0].x+"+ sx +",\n"+"y:"+name+"[0].y+"+ sy +",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\nc:'"+template[i].color+"',\n label:'"+template[i].label+"'\n"
+					}
+					if(i<template.length-1){
+						if(i>0){
+							te=te+"},\n"
+						}
+					}
+					else{
+						te=te+"})\n"
+					}
+				}
+				inp[0].value=te
+				//inp.type="text"
+				//document.body.appendChild(inp)
+				//console.log(te)
+			}
+			var erase=function(){
+				let inp=document.getElementsByTagName("input")
+				let div=document.getElementsByTagName("div")
+				template=[]
+				for(let i=0;i<div.length;i++){
+					div[i].style.backgroundColor="grey"
+					div[i].o=0
+					//alert()
+				}
+				//inp[0].value=""
+				//inp[2].style.top=-100+"%"
+				console.clear()
+			}
+			var piColor=function(){
+				let inp=document.getElementsByTagName("input")
+				bcolor=inp[0].value
+				inp[1].value="pic color:"+bcolor
+				clickable()
+			}
+			var str_to_int=function(str){
+			out=[]
+			out2=0
+			for(let i=0;i<=str.length-1;i++){
+			if(str[i]=="0"){
+			out.push(0)
+			}
+			else if(str[i]=="1"){
+			out.push(1)
+			}
+			else if(str[i]=="2"){
+			out.push(2)
+			}
+			else if(str[i]=="3"){
+			out.push(3)
+			}
+			else if(str[i]=="4"){
+			out.push(4)
+			}
+			else if(str[i]=="5"){
+			out.push(5)
+			}
+			else if(str[i]=="6"){
+			out.push(6)
+			}
+			else if(str[i]=="7"){
+			out.push(7)
+			}
+			else if(str[i]=="8"){
+			out.push(8)
+			}
+			else if(str[i]=="9"){
+			out.push(9)
+			}
+			else{
+			out.push(-1)
+			}
+			}
+			for(let i=0;i<=out.length-1;i++){
+			out2+=out[(out.length-1)-i]*(10**i)
+			}
+			return out2
+			}
+			var find_position=function(str){
+			let obj={x:0,y:0,c:"",w:0,h:0,label:""}
+			let number=0
+			let string=""
+			let count=0
+			let ignore=false
+			let countable=0
+			let negative=false
+			for(let i=0;i<=str.length-1;i++){
+			if(str[i]=="["){
+			ignore=true
+			}
+			if(str[i]=="]"){
+			ignore=false
+			}
+			if(ignore==false){
+			sti=str_to_int(str[i])
+			//console.log("n1)",sti,str)
+			if(sti>=0){
+			countable+=1
+			}
+			}
+			}
+			for(let i=0;i<=str.length-1;i++){
+			if(str[i]=="-"){
+			negative=true
+			}
+			if(str[i]=="["){
+			ignore=true
+			}
+			if(str[i]=="]"){
+			ignore=false
+			}
+			if(ignore==false){
+			sti=str_to_int(str[i])
+			//console.log("n1)",sti,str)
+			if(sti>=0){
+			count+=1
+			number+=sti*(10**(countable-count))
+			}
+			}
+			}
+			if(negative==true){
+			number*=(-1)
+			negative=false
+			}
+			//console.log("n2)",number,str)
+			var q=false
+			for(let i=0;i<=str.length-1;i++){
+			if(str[i]=="'"){
+			if(q==false){
+			q=true
+			}
+			else{
+			q=false
+			}
+			}
+			if(q==true && str[i] !="'"){
+			string+=str[i]
+			}
+			}
+			//console.log("c)",color,str)
+			xyc=""
+			for(let i=0;i<=str.length-1;i++){
+			if(str[i]=="x"){
+			xyc="x"
+			break
+			}
+			if(str[i]=="y"){
+			xyc="y"
+			break
+			}
+			if(str[i]=="c"){
+			xyc="c"
+			break
+			}
+			if(str[i]=="w"){
+			xyc="w"
+			break
+			}
+			if(str[i]=="h"){
+			xyc="h"
+			break
+			}
+			if(str[i]=="l"){
+			xyc="l"
+			break
+			}
+			}
+			//console.log("xyc)",xyc)
+			if(xyc=="x"){
+			obj.x=number
+			}
+			else if(xyc=="y"){
+			obj.y=number
+			}
+			else if(xyc=="c"){
+			obj.c=string
+			}
+			else if(xyc=="w"){
+			obj.w=number
+			}
+			else if(xyc=="h"){
+			obj.h=number
+			}
+			else{
+			obj.l=string
+			}
+			//console.log(obj.x,obj.y,obj.c)
+			return obj
+			}
+			var locate=function(){
+			//let cnv=document.getElementsByTagName("canvas")
+			//let cnvs=cnv[0]
+			//let ctx=cnvs.getContext("2d")
+			var values= prompt()//btns[0].value
+			//var namel=name.length-1
+			var dq=0
+			var word=""
+			var cnt=0
+			var e=0
+			var arrobj=[]
+			var divb=[]
+			var al=false
+			var obj={x:0,y:0,w:0,h:0,c:"",label:""}
+			for(let i=0;i<values.length-1;i++){
+			    word+=values[i]
+			    if(word=="c:"){
+			        al=true
+			    }
+			    if(al==true){
+			        var col=find_position(word)
+			        template[0].color=col.c
+			    }
+			    if(values[i]==","){
+			        word=""
+			        al=false
+			    }
+			    if(values[i]=="("){
+			        e=i
+			        word=""
+			        break
+			    }
+			}
+			for(let i=e;i<=values.length-2;i++){
+			word+=values[i]
+			if(values[i]=="'"){
+			dq+=1
+			if(dq==2){
+			dq=0
+			}
+			}
+			if((values[i]=="," && dq!=1)||i==values.length-2){
+			cnt+=1
+			var fpr=find_position(word)
+			word=""
+			if(cnt==1){
+			obj.x=fpr.x
+			}
+			else if(cnt==2){
+			obj.y=fpr.y
+			}
+			else if(cnt==3){
+			obj.w=fpr.w
+			}
+			else if(cnt==4){
+			obj.h=fpr.h
+			}
+			else if(cnt==5){
+			obj.c=fpr.c
+			}
+			else{
+			obj.label=fpr.label
+			obj.x=(template[0].x+(obj.x*25)/2)
+			obj.y=(template[0].y+(obj.y*25)/2)
+			var div=document.getElementsByTagName("div")
+			for(let j=0;j<=div.length-2;j++){
+			if(div[j].x==template[0].x && div[j].y==template[0].y){
+			arrobj.push(template[0].color)
+			divb.push(div[j])
+			}
+			if(div[j].x==obj.x && div[j].y==obj.y){
+			arrobj.push(obj.c)
+			divb.push(div[j])
+			}
+			}
+			cnt=0
+			}
+			}
+			}
+			for(let i=0;i<arrobj.length;i++){
+			    bcolor=arrobj[i]
+			    divb[i].click()
+			}
+			}
+		</script>
+	</body>
+</html>
