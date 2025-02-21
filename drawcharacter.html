@@ -1,3 +1,4 @@
+<!--Doctype html-->
 <html>
 	<head>
 		<title>character paint</title>
@@ -42,6 +43,7 @@
 		<input type="button" value="enter a label" id="input4">
 		<input type="button" onclick="locate()"value="enter drawing" id="input5">
 		<script>
+			//to enter a drawing first put the starting position
 		    var btns=document.getElementsByTagName("input")
 			var name=prompt("enter name of the object")
 			var template=[]
@@ -64,8 +66,8 @@
 				function drawpad(){
 					let div=[document.createElement("div")]
 					let btn=document.createElement("input")
-					let avw=25
-					let avh=25
+					let avw=10
+					let avh=10
 					let cx=0
 					let cy=0
 					let i=0
@@ -81,8 +83,8 @@
 						for(let l=0 ;l<(interger(wiW/avw)+1);l++){
 							if(l<interger(wiW/avw)){
 								div.push(document.createElement("div"))
-								div[i].style.height=avh-1+"px"
-								div[i].style.width=avw-1+"px"
+								div[i].style.height=avh+"px"
+								div[i].style.width=avw+"px"
 								div[i].style.position="absolute"
 								div[i].style.left=cx+"px"
 								div[i].y=cy
@@ -172,14 +174,16 @@
 				let sy=0
 				for(let i=0;i<template.length;i++){
 					if(i<1){
-						te+="var "+name+"=[{\nx:"+template[i].x+",\n"+"y:"+ template[i].y+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\n"+"c:'"+template[i].color+"',\n label:'"+template[i].label+"'}];\n"
-						te+="\n"+name+".push("
+						//te+="var "+name+"=[{\nx:"+template[i].x+",\n"+"y:"+ template[i].y+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\n"+"c:'"+template[i].color+"',\n label:'"+template[i].label+"'}];\n"
+						te+="var "+name+"={\n"+template[i].x+",\n"+""+ template[i].y+",\n"+""+template[i].w+",\n"+""+template[i].h+",\n"
+						//te+="\n"+name+".push("
 					}
 					else{
 						//te+=name+"[i]{\nx:"+name+"[i].x+"+ (template[i].x-template[i-1].x) +",\n"+"y:" +name+"[i-1].y"+(template[i].y-template[i-1].y)+",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\ncolor:'"+template[i].color+"'\n"
 						sx+=((template[i].x-template[i-1].x)/25)*width
 						sy+=((template[i].y-template[i-1].y)/25)*height
-						te+="{x:"+name+"[0].x+"+ sx +",\n"+"y:"+name+"[0].y+"+ sy +",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\nc:'"+template[i].color+"',\n label:'"+template[i].label+"'\n"
+						//te+="{x:"+name+"[0].x+"+ sx +",\n"+"y:"+name+"[0].y+"+ sy +",\n"+"w:"+template[i].w+",\n"+"h:"+template[i].h+",\nc:'"+template[i].color+"',\n label:'"+template[i].label+"'\n"
+						te+=""+name+"[0]+"+ sx +",\n"+""+name+"[1]+"+ sy +",\n"+""+template[i].w+",\n"+""+template[i].h+"\n"
 					}
 					if(i<template.length-1){
 						if(i>0){
@@ -292,10 +296,11 @@
 			}
 			if(ignore==false){
 			sti=str_to_int(str[i])
-			//console.log("n1)",sti,str)
+			//console.log(sti,str)
 			if(sti>=0){
 			count+=1
 			number+=sti*(10**(countable-count))
+			console.log(number,sti,countable,count,str)
 			}
 			}
 			}
@@ -372,7 +377,7 @@
 			//let cnv=document.getElementsByTagName("canvas")
 			//let cnvs=cnv[0]
 			//let ctx=cnvs.getContext("2d")
-			var values= prompt()//btns[0].value
+			var values=btns[0].value
 			//var namel=name.length-1
 			var dq=0
 			var word=""
@@ -383,33 +388,52 @@
 			var al=false
 			var obj={x:0,y:0,w:0,h:0,c:"",label:""}
 			for(let i=0;i<values.length-1;i++){
+			    //if(values[i]=="x",values[i]=="y",values[i]=="c"
 			    word+=values[i]
+			    //console.log(word)
+			    if(values[i]=="'"){
+			    dq+=1
+			    if(dq==2){
+			    dq=0
+			    }
+			    }
 			    if(word=="c:"){
 			        al=true
+			        //console.log("true")
 			    }
 			    if(al==true){
 			        var col=find_position(word)
 			        template[0].color=col.c
 			    }
-			    if(values[i]==","){
+			    if(values[i]=="," && dq!=1){
 			        word=""
-			        al=false
+			        //console.log("false")
 			    }
-			    if(values[i]=="("){
+			    if(values[i]==")"){
+			        al=false
+			        //console.log("false")
+			    }
+			    if(values[i]==";"){
 			        e=i
 			        word=""
 			        break
 			    }
 			}
-			for(let i=e;i<=values.length-2;i++){
+			for(let i=e;i<=values.length-1;i++){
+			/*if(values[i]==";"){
+				continue
+			}*/
 			word+=values[i]
+			//console.log(word)
+			//console.log(dq,values[i],"db")
 			if(values[i]=="'"){
 			dq+=1
 			if(dq==2){
 			dq=0
 			}
 			}
-			if((values[i]=="," && dq!=1)||i==values.length-2){
+			if((values[i]=="," && dq!=1)||i==values.length-1){
+			//console.log(values[i],dq,"db2")
 			cnt+=1
 			var fpr=find_position(word)
 			word=""
@@ -429,6 +453,7 @@
 			obj.c=fpr.c
 			}
 			else{
+			//console.log(template[0])
 			obj.label=fpr.label
 			obj.x=(template[0].x+(obj.x*25)/2)
 			obj.y=(template[0].y+(obj.y*25)/2)
@@ -439,6 +464,7 @@
 			divb.push(div[j])
 			}
 			if(div[j].x==obj.x && div[j].y==obj.y){
+			//console.log(div[j].x,obj.x)
 			arrobj.push(obj.c)
 			divb.push(div[j])
 			}
@@ -452,6 +478,7 @@
 			    divb[i].click()
 			}
 			}
+			//console.log(find_position(" color:'rgb(7,9,8)' ").c)
 		</script>
 	</body>
 </html>
